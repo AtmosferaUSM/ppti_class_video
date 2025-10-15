@@ -1,0 +1,221 @@
+Sub-chapter content:
+{pdf_content}
+    
+Phase 1: High-Fidelity Sub-Chapter Content Isolation
+
+    Objective: To accurately isolate and extract the complete text content belonging solely to the target sub-chapter identified below, from the provided `Sub-chapter content`, which may include residuals from adjacent sections, headers, or footers.
+
+    Input:
+
+    1.  `InputText`: The block of text labeled "Sub-chapter content" above.
+    2.  `TargetSectionNumber`: The specific section number identifier for the desired sub-chapter (e.g., "22.3", "4.1.2"). Use the first valid sub-topic title in the input text as the TargetSectionNumber. You must not skip this first valid section even if more specific or interesting sections appear later.
+
+    Isolation Procedure:
+
+    1.  Identify Sub-Topic Title Pattern:
+           Establish criteria to recognize sub-topic title lines within `InputText`. These lines typically start with a numerical identifier (like "22.3", "22.4"), followed by whitespace and title text (often distinctively formatted, e.g., bold). Example: "**22.3 Coulomb's Law**".
+           Critically differentiate these structural sub-topic titles from potentially similar patterns like page headers/footers (e.g., "Chapter 22 Electric Fields", "593"), figure/table captions (e.g., "Figure 22.6 Coulomb's balance...", "Figure P22.6 Example of ..." or "Caption 22-6 Some texts ..."), equation numbers, and in-text references.
+
+    2.  Determine `TargetSectionNumber`: Identify the first valid sub-topic title pattern that appears in the `InputText`. The numerical identifier from this line is your `TargetSectionNumber`. Extract the full title text as well (`TargetTitleText`).
+
+    3.  Locate Target and Next Title Lines:
+           Confirm the line identified in Step 2 as `TargetTitleLine`.
+           Continue scanning `InputText` starting from the line immediately after `TargetTitleLine`. Find the first line that robustly matches the Title Pattern for any section number that logically follows `TargetSectionNumber` (e.g., if Target="22.3", look for "22.4", "22.3.1", "23.1", etc.). Record this line as `NextTitleLine`.
+
+    4.  Determine Content Boundaries:
+           `ContentStartLine`: This is the `TargetTitleLine` itself.
+           `ContentEndLine`:
+               If `NextTitleLine` was found: The line immediately preceding `NextTitleLine`.
+               If `NextTitleLine` was not found: The very last line of `InputText`.
+
+    5.  Extract and Filter:
+           Select all lines from `ContentStartLine` up to and including `ContentEndLine`.
+           Ensure no lines before `ContentStartLine` are included.
+           Ensure no lines from `NextTitleLine` onwards are included (if `NextTitleLine` was found).
+           Perform filtering on the selected lines to remove identifiable page headers or footers if they appear within this block.
+           The resulting text block is the `FilteredContent`.
+
+    6.  Validation (Conceptual Check):
+           Verify the `FilteredContent` begins with the correct `TargetTitleLine`.
+           Read through the beginning and end of the `FilteredContent`. Does it appear to be a cohesive unit focused on the topic of the `TargetSectionNumber`? Check for consistent terminology and logical flow.
+           Does the content end appropriately just before the next logical topic would begin (or naturally conclude if it is the last section)?
+
+    Output of Phase 1:
+
+       `FilteredContent`: The isolated block of text containing the title line and all content exclusively for the identified `TargetSectionNumber`.
+       `TargetSectionNumber`: The number identified (e.g., "22.3").
+       `TargetTitleText`: The title text identified (e.g., "Coulomb's Law").
+
+
+Phase 2: LaTeX Beamer Presentation Generation
+
+    Constraint: Use only the `FilteredContent` generated in Phase 1 to carry out the instructions below. Do not refer back to the original `Sub-chapter content` or any information outside the `FilteredContent` block.
+    
+    **ULTRA-CRITICAL SYNTAX REQUIREMENT: AVOID BRACE/COMPARISON CONFUSION**
+    * **A frequent LLM error is confusing mathematical comparison operators (`>`, `<`) with curly braces (`}}`, `{{`). This error MUST NOT occur in the output.**
+    * **Rule 1:** Mathematical 'greater than' MUST ALWAYS be written as `$ > $` within math mode. NEVER use `}}`.
+        * **INCORRECT EXAMPLE TO AVOID:** `$r }} R$` or `$C_1 }} C_2$`
+        * **CORRECT USAGE:** `$r > R$`, `$C_1 > C_2$`
+    * **Rule 2:** Mathematical 'less than' MUST ALWAYS be written as `$ < $` within math mode. NEVER use `{{`.
+        * **INCORRECT EXAMPLE TO AVOID:** `$C_1 {{ C_2$` or `$R {{ r$`
+        * **CORRECT USAGE:** `$C_1 < C-2$`, `$R < r$`
+    * **Rule 3:** Standard curly braces `{{` and `}}` are ONLY for LaTeX grouping (e.g., `\\section{{Title}}`, `x^{{2}}`) or set notation (`\\{{ x | x > 0 \\}}`). They are NEVER substitutes for comparison operators.
+    **This rule takes precedence over any potential brace balancing heuristics that might lead to incorrect substitutions.**    
+    ** end of ULTRA-CRITICAL SYNTAX REQUIREMENT: AVOID BRACE/COMPARISON CONFUSION**
+    
+    The generated LaTeX code **must not** include any Unicode characters. This includes, but is not limited to, circled numbers (e.g., ➀, ➁), en dashes, em dashes, fancy quotes (“ ” ‘ ’), non-breaking spaces, or typographic symbols. All characters in the LaTeX output must be strictly ASCII-compliant and compile successfully using `pdflatex` without requiring additional LaTeX packages for Unicode handling.
+
+    Replace any Unicode character with plain text equivalents. For example:
+    - Use `(1)`, `(2)` instead of ➀, ➁.
+    - Use `--` for dashes.
+    - Use straight quotes ' and " instead of “ ” or ‘ ’.
+    - Do not use special math symbols unless represented using LaTeX math mode (e.g., `$\\Rightarrow$` instead of ⇒).
+    - Avoid using the `^` symbol in regular text. Always enclose expressions containing `^` in math mode. For example, instead of writing A=(0.18 k)^2 in text, format it as $A=(0.18 \\mathrm{{k}})^2$ or \\[ A=(0.18 \\mathrm{{k}})^2 \\] to ensure proper mathematical rendering.
+    If any character from the source text is not ASCII-safe, rewrite it into its plain-text or LaTeX-safe equivalent.
+
+    Instructions:
+    Generate a LaTeX Beamer presentation based only on the `FilteredContent`. You are an expert atmospheric scientist with in-depth knowledge in flux measurement using eddy covariance and numerical weather prediction. You have a strong ability to effectively convey and communicate abstract and technical Ph.D.-level research topics to an audience with a limited background in research-level atmospheric science. Create a well-structured, high-quality presentation ensuring clarity, coherence, and engagement.
+
+    The LaTeX Beamer presentation must adhere strictly to the following rules:
+    
+    1.  LaTeX Structure and Formatting:
+           - The first line must strictly begin with `\\documentclass{{beamer}}`.
+           - The last line must strictly end with `\\end{{document}}`.
+           - Use the `Madrid` theme (`\\usetheme{{Madrid}}`).
+           - Include page numbers on every frame using the provided headline template. Remove the default footline.
+           - Use standard packages: `amsmath`, `amssymb`, `amsfonts`, `graphicx`. Use `utf8` input encoding.
+           - Leave `\\author{{}}` and `\\date{{}}` blank.
+           - Ensure direct compilability with `pdflatex`. No markdown, code blocks, or explanatory text outside LaTeX commands.
+           - Ensure that the generated LaTeX code does not contain any instance of the `\\pause` command — this command must be completely omitted from all slides.
+           - Every occurrence of the ampersand character must be properly escaped: replace any instance of `&` with `\\&` so that LaTeX compilation succeeds without errors.
+           - In the latex file, the `&` (`and`) symbol must be replaced with `\\&`.
+           - Ensure all \\begin{{frame}} environments are properly closed with \\end{{frame}}. In particular, check that all curly braces ({{}}) are correctly paired. The `\\end{{frame}}` line must not mistakenly printed as `\\end{{frame>`.
+           - Ensure all `\\begin{{itemize}}` environments are properly closed with `\\end{{itemize}}`. In particular, check that all curly braces (`{{}}`) are correctly paired. The `\\end{{itemize}}` line must not mistakenly printed as `\\end{{itemize>`. The `\\end{{frame}}` line must not mistakenly printed as `\\end{{frame>`.
+
+    2.  Initial Slides:
+           The absolute first lines of the LaTeX document must match this structure (replace title content as needed):
+
+            \\documentclass[10.5pt]{{beamer}}	
+            \\usetheme{{CambridgeUS}}
+            \\usepackage{float}
+            \\usepackage{graphicx}
+            \\setkeys{Gin}{width=0.9\linewidth,height=0.6\textheight,keepaspectratio}
+            \\setbeamertemplate{{headline}}{{%
+            \\hfill%
+            \\insertframenumber{{}} / \\inserttotalframenumber%
+            \\par%
+            }}
+            \\setbeamertemplate{{footline}}{{}} % Remove the default footline
+            \\usepackage{{amsmath}}
+            \\usepackage{{amssymb}}
+            \\usepackage{{amsfonts}}
+            \\usepackage[utf8]{{inputenc}}
+            \\usepackage{{graphicx}}
+            \\title{{ Title }} % Use the exact number and title from Phase 1
+            \\author{Associate Professor Yusri Yusup}
+            \\institute{School of Industrial Technology, Universiti Sains Malaysia}
+            \\logo{\\includegraphics[height=0.8cm]{usm_logo.png}\hspace*{0.2cm}}
+            \\setbeamertemplate{navigation symbols}{}
+            \\date{{}}
+            \\begin{{document}}
+            \\begin{{frame}}
+            \\titlepage   
+            \\end{{frame}}
+            
+            \\begin{{frame}}{{Outline}}
+            \\textbf{{Key Topics Covered:}}
+            \\begin{{itemize}}
+                \\item Item 1 % Replace with actual key topics from FilteredContent
+                \\item Item 2
+                \\item $\\cdots$
+            \\end{{itemize}}
+            \\end{{frame}}
+                       
+           Manually create a concise, logical list of key topics from `FilteredContent` for the Outline slide `itemize` environment. Do not use `\\tableofcontents`.
+
+    3.  Content Slides:
+            - Analyze `FilteredContent` to design a logical presentation flow.
+            - Generate at least 12 content frames (if `FilteredContent` is sufficiently long).
+	        - Limit each frame to 1–2 related main concepts.
+	        - Provide a concise, informative `\\frametitle{{}}` for each slide.
+	        - Explain concepts clearly using structured bullet points (`\\itemize`), ensuring that each slide contains a reasonable number of bullet points (e.g., 2–5 items) to prevent overcrowding or text overflow.                      
+	        - Include only the essential, high-level steps of any derivations (summarized rather than detailed step-by-step breakdowns), along with succinct real-world examples and illustrative explanations drawn from `FilteredContent`.
+	        - When generating slide content, include references to Equation numbers (e.g., "Eq. 22"), Example numbers (e.g., "Example 22.3"), or Figure numbers (e.g., "Fig. 22.10a") only if the corresponding element is actually present in the slide output; omit any references to elements that are not included.
+	        - For slides showcasing sample examples from the source material, ensure that the slide title explicitly includes a label such as "Example XX" (with "XX" replaced by the relevant example number) and that any mention of 'Example XX' appears only if the corresponding example content is present.	                                
+            - The symbol '->' or '<-' must be in LaTeX math mode, i.e., $\\rightarrow$ or $\\leftarrow$.
+            
+            - **Curly Braces vs. Comparison Operators (REINFORCEMENT):**
+            - Ensure every opened brace `{{` for LaTeX grouping/commands has a matching `}}`.
+            - **ABSOLUTELY NEVER** substitute `>` with `}}` or `<` with `{{`.            
+            - Verify correct usage in context (e.g., `$E = 0$ for $r < R$`).
+            - Always correctly use mathematical comparison operators in LaTeX math mode, such as `$C_1 > C_2$`, `$r < R$`.                  
+	        - Periodically insert engagement questions within slides (as bullet points or separate text) to reinforce key concepts.
+
+    4.  Figures:
+           Include relevant figures from `FilteredContent` where they clarify explanations.
+           Use each figure present in `FilteredContent` exactly once* unless a figure referenced as having subparts (e.g., Figure 3.3a and Figure 3.3b) exists as a single combined image file (e.g., Figure_3-3.png), include that file once for both references.
+If individual files (Figure_3-3a.png, Figure_3-3b.png) do not exist, fall back to the combined file name.
+           Ensure figure filenames match the pattern `Figure_XX.png` precisely. Infer filename from text references (e.g., "Figure 22.6", "Figure TP22.6", "Fig. 22-6", "Figure 23-7").
+           Always include available figures extracted from the folder, even if they are not explicitly referenced in the text.
+Each figure file named Figure_*.png must appear on a separate slide with its caption (if available).
+           Figure included in a slide must always be placed **centered and scaled properly** to fit the frame.
+           Typically, it is placed right after the \\end{{itemize}} but before the \\end{{frame}} commands.
+
+           Use the following syntax for figure inclusion:
+
+            \\IfFileExists{{Figure_xx-xx.png}}{{%
+                \\begin{{figure}}[H]
+                \\centering
+                [width=0.75\textwidth,keepaspectratio]{{Figure_xx-xx.png}}
+                \\end{{figure}}
+            }}{{}}
+	    You must generate one dedicated figure slide for every available file matching Figure_*.png in the current directory, in numerical order.
+
+    5.  Figure Placement for Readability:
+           - Every figure must appear on its own dedicated slide with no bullet points or explanatory text.
+           - Each figure-only slide must have a clear and descriptive \frametitle{} indicating the figure number and topic (e.g., \frametitle{Figure 24.2: Hydrostatic Balance Visualization}).
+           - The slide should contain only the \figure{...} environment — no \itemize, equations, or paragraphs.
+           - Figures must be centered and scaled conservatively to prevent overflow:
+                \includegraphics[width=0.75\textwidth,keepaspectratio]
+           - When multiple subpanels exist (e.g., a/b/c), arrange them side by side within the same slide, using 0.45\textwidth per image.
+           - Captions should appear below each figure inside the same figure environment, using concise wording from the source text.
+           - You must generate one dedicated figure slide for every available file matching Figure_*.png in the current directory, in numerical order.
+               
+    6. Equations:
+            When including an equation in a slide, omit the equation number by default to keep the slide uncluttered.
+            If the equation is referenced or alluded to elsewhere in the slide, include its number for clarity.
+            If an equation is to be numbered, the equation should be in the math mode, i.e., $ {{ ... }}$, followed by the equation number in the same line.
+            Do not redundantly cite or display the equation number within the slide content unless it is necessary for a cross-reference.
+    
+    7.  Concluding Slides:
+           End with a concise Summary frame reviewing critical points.
+           Follow the Summary with a final frame containing two thought-provoking discussion/review questions based on the sub-chapter's content.
+
+    8.  Academic Quality:
+           Ensure content accuracy and alignment with the undergraduate environmental science level.
+           Maintain a logical structure throughout the presentation.
+
+    9. Absolutely NO markdown or markdown-like contamination in the LaTeX output:
+       - Never include markdown backticks ``` anywhere.
+       - Never add markdown formatting (e.g., #, ##, ###, etc.).
+
+   10. Frame Endings:
+       - Each `\\begin{{frame}}` must strictly match with a correctly closed `\\end{{frame}}`.
+       - Never close a frame with `\\end{{frame>` (incorrect) or any other malformed variant.
+
+   11. Math Mode Enforcement:
+        - Always wrap comparison symbols (`<`, `>`) and arrows (`->`, `<-`) in LaTeX math mode explicitly (`$<$`, `$>$`, `$\\rightarrow$`, `$\\leftarrow$`).
+
+   12. Final Validation:
+       - After generating the LaTeX document, perform a conceptual scan specifically for:     
+           a. BRACE/COMPARISON ERROR CHECK: Search the entire generated code for the specific patterns `$ [^$]* }} [^$]* $` and `$ [^$]* {{ [^$]* $` (regular expression idea: math mode containing standalone braces). If any instance is found, immediately verify if the `}}` should be `>` or the `{{` should be `<`. Correct EVERY instance. For example, if you find `$r }} R$`, you MUST correct it to `$r > R$`. If you find `$r {{ R$`, you MUST correct it to `$r < R$`. This check is NOT optional.
+           b. Incorrect arrow symbols (like `-}}` should be corrected to `$\\rightarrow$`).                      
+           c. Missing curly braces or mismatched braces must be fixed.
+           d. Globally mismatched curly braces (`{{` without `}}`) for LaTeX syntax.
+           e. Incorrectly closed frame environments (`\\end{{frame>` instead of `\\end{{frame}}`).
+           f. Incorrect use of 'larger than' symbol, such as in `$C_1 }} C_2$` for `$C_1 > C_2$` must be fixed.
+           g. Incorrect use of 'less than' symbol, such as in `$C_1 {{ C_2$` for `$C_1 < C_2$` must be fixed.
+           h. Any remaining markdown (` ``` `, `# `) must be removed.
+       - You MUST rectify ALL identified issues, especially the brace/comparison error (item 12a), before outputting the final LaTeX code.**
+
+   13. Your final LaTeX output MUST compile without errors in `pdflatex` and should strictly adhere to the above guidelines.

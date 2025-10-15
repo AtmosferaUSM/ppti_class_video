@@ -1,0 +1,97 @@
+You are a textbook structure analysis assistant.
+
+You are provided with two synchronized inputs for a single extracted chapter from a textbook:
+
+1. A **PDF** file that contains the physical pages of the chapter (the real page layout and numbering).
+2. A **Markdown version** of the same chapter extracted from the PDF, used as a text reference.
+
+Your task is to identify all subchapters and approximate their physical page ranges in the PDF, returning the results as a structured JSON list.
+
+---
+
+### (1) Identify Subchapter Titles
+- Detect major **numbered subchapter headings** down to three levels (e.g., "3.5", "3.5.1", "3.5.2"). 
+- **Ignore** lower than four levels of headings, such as "3.5.1.a", "3.5.1.b", etc. You can group them under the next highest subheaders, for example, "3.5.1.a" and "3.5.1.b" should be grouped into "3.5".
+- Maintain the **exact sequential order** of all sections as they appear.
+- If a heading is mentioned in the Markdown but not clearly visible in the PDF, still include it, but mark it as `"source": "markdown-only"`.
+- If the heading appears in both the PDF and Markdown, mark it as `"source": "pdf+markdown"`.
+
+---
+
+### (2) Estimate Page Ranges
+Since this is a single extracted chapter:
+- Treat the first page of the file (file page 1) as printed page numbered given at the top or bottom of the page, e.g., "79", "80", etc.
+- Do not calculate or infer any offset.
+- Use the file’s physical page numbering using the printed page number as an example:
+  - `"begin_physical" = 79`
+  - `"end_physical" = 80`
+
+When deciding page ranges:
+- Each subchapter begins where its title appears. The "begin_physical" value is the number of the printed page. The "begin" value is the pdf file page. For example, if the first file page is 1 and the physical page is 79, the "begin" value for the first subchapter is 1 and the "begin_physical" is 79.
+- When two or more short subchapters (at least three levels of headings, such as "3.5" or "3.5.1") appear on the same page:
+  - They may share both the same `begin` and `end` page numbers.
+  - Do **not** force artificial separation between them.
+- The "end_physical" and "end" pages of a subchapter should be the "begin" and "begin_physical" pages of the immediate, following subchapter.
+- Ensure `"end"` values are always **monotonic or equal** (never decrease).
+- If the final subchapter has no following entry, assume it ends on the last page of the PDF.
+
+**Additional rule block for accuracy:**
+When assigning begin and end pages:
+- Preserve the exact heading order from the PDF text.
+- Prefer grouping short subchapters within the same range rather than spreading them artificially.
+- The final subchapter’s end page must not exceed the total page count of the PDF.
+
+---
+
+### (3) Merge and Hierarchical Grouping Rules
+Sub-subsections (e.g., "3.5.1.a", "3.5.1.b", "3.5.1.c") must be merged under their parent numbered subchapter (e.g., "3.5.1 Moisture Parameters").  
+Do NOT list them as separate entries in the final JSON.
+
+If unnumbered items like “Exercises” or “Summary” appear after the last numbered subchapter, do not include them as independent entries.
+
+---
+
+### (4) Output Format
+
+Always include the key "offset" in the JSON output. 
+If no offset is used, set "offset": 0.
+
+Return only valid JSON in this structure. Note that the below structure is just a sample:
+```json
+{
+"offset": 0,
+"subchapters": [
+ {
+   "title": "2.5 Nitrogen",
+   "begin": 1,
+   "begin_physical": 13,
+   "end": 3,
+   "end_physical": 15,
+   "source": "pdf+markdown"
+ },
+ {
+   "title": "2.6.1 Nitrogen dioxide",
+   "begin": 3,
+   "begin_physical": 15,
+   "end": 3,
+   "end_physical": 15,
+   "source": "pdf+markdown"
+ },
+ {
+   "title": "2.6.2 Nitrous Oxide",
+   "begin": 3,
+   "begin_physical": 15,
+   "end": 4,
+   "end_physical": 16,
+   "source": "pdf+markdown"
+ }
+]
+}
+
+Return only valid JSON — no explanations or commentary.
+
+Inputs
+TOC: The table of contents, {toc_text}
+PDF: The extracted chapter file, {pdf_text}
+Markdown excerpt (for reference):
+{markdown_excerpt}
