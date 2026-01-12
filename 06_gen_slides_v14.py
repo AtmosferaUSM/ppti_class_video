@@ -26,13 +26,13 @@ api_key_gemini = os.getenv("GEMINI_API_KEY")
 ##### Select Model #######
 if api_key_gemini:
     model_choice='gemini'
-    api_key, model_name = api_key_gemini, "gemini-2.5-pro-preview-03-25"
+    api_key, model_name = api_key_gemini, "gemini-2.5-pro"
     genai.configure(api_key=api_key)
     generative_model = genai.GenerativeModel(model_name)
     chat_session = generative_model.start_chat()
 elif api_key_oai:
     model_choice='openai'
-    api_key, model_name = api_key_oai, "gpt-4o"
+    api_key, model_name = api_key_oai, "gpt-5-mini"
     client = OpenAI(api_key=api_key)
 elif api_key_dsk:
     model_choice='deepseek'

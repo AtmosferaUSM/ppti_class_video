@@ -43,7 +43,7 @@ api_key_gemini = os.getenv("GEMINI_API_KEY")
 if api_key_gemini:
     model_choice='gemini'  ### dafault: gemini; options: 'openai'  or 'deepseek'    
     api_key = api_key_gemini   
-    model_name ="gemini-2.5-pro-preview-03-25"
+    model_name ="gemini-2.5-pro"
     # model_name ="gemini-2.0-flash"    
     # model_name ="gemini-2.5-flash-preview-04-17"
     # model_name ="gemini-1.5-pro"            
@@ -57,7 +57,7 @@ if api_key_gemini:
 elif api_key_oai:        
     model_choice='openai'  ### dafault: gemini; options: 'openai'  or 'deepseek'    
     #model_name = 'gpt-4o-mini-2024-07-18'    # Cheapest, but less effective than gpt-4o   
-    model_name = "gpt-4o"                     # default for png abstraction. Works better than 4o-mini but a bit more expensive    
+    model_name = "gpt-5-mini"                     # default for png abstraction. Works better than 4o-mini but a bit more expensive    
     api_key = api_key_oai 
     client = OpenAI(api_key = api_key)
     slidesfile="slides_oai.pdf"
@@ -186,12 +186,22 @@ with open(scriptfile, "w") as outfile:
         ##
         if i == 0:
             title = slide_contents[0]['text_content'].strip()
-            #outfile.write(f"**Slide 1 [1 sec]:  \n{title}**\n\n")
-            #outfile.write(f"**Slide 1 [1 sec]: {title}**\n")
-            #outfile.write(" ")            
-            outfile.write(f"**Slide 1 [1 sec]:  \n{title}**\n\n")
-            print(f"Written title for Slide 1: {title}")
-                     
+
+            # --- normalize academic titles for TTS ---
+            title = title.replace("Assoc. Prof.", "associate professor")
+            title = title.replace("Assoc Prof.", "associate professor")
+            title = title.replace("Prof.", "professor")
+            title = title.replace("Prof ", "professor ")
+            title = title.replace("Dr.", "doctor")
+            title = title.replace("Dr ", "doctor ")
+
+            outfile.write(
+                "**Slide 1 [1 sec]:\n"
+                "<break time=\"3s\" /> "
+                f"{title} "
+                "<break time=\"2s\" />**\n\n"
+            )
+            print("Written normalized narrated opening for Slide 1")
             continue  # Skip narration generation for the first slide
         ##
         try:

@@ -62,7 +62,7 @@ if api_key_gemini:
     model_choice = 'gemini'  # Default: gemini; options: 'openai'  or 'deepseek'    
     api_key = api_key_gemini   
     #model_name ="gemini-2.5-pro-preview-03-25"
-    model_name ="gemini-2.0-flash"    
+    model_name ="gemini-2.5-pro"    
     # model_name ="gemini-2.5-flash-preview-04-17"
     # model_name ="gemini-1.5-pro"            
     genai.configure(api_key=api_key)    
@@ -75,7 +75,7 @@ if api_key_gemini:
 elif api_key_oai:        
     model_choice='openai'  # Default: gemini; options: 'openai'  or 'deepseek'    
        
-    model_name = "gpt-4o"  # Default for png abstraction. Works better than 4o-mini but a bit more expensive    
+    model_name = "gpt-5-mini"  # Default for png abstraction. Works better than 4o-mini but a bit more expensive    
     api_key = api_key_oai 
     client = OpenAI(api_key = api_key)
     slidesfile="slides_oai.pdf"
@@ -94,7 +94,7 @@ elif api_key_dsk:
 
 ######### Forcefully use openai ######### 
 model_choice='openai'  # Default: gemini; options: 'openai'  or 'deepseek'      
-model_name = "gpt-4o"  # Default for png abstraction. Works better than 4o-mini but a bit more expensive    
+model_name = "gpt-5-mini"  # Default for png abstraction. Works better than 4o-mini but a bit more expensive    
 api_key = api_key_oai 
 client = OpenAI(api_key = api_key_oai)
 slidesfile="slides_oai.pdf"

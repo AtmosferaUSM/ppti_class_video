@@ -74,14 +74,14 @@ Phase 2: LaTeX Beamer Presentation Generation
     If any character from the source text is not ASCII-safe, rewrite it into its plain-text or LaTeX-safe equivalent.
 
     Instructions:
-    Generate a LaTeX Beamer presentation based only on the `FilteredContent`. You are an expert atmospheric scientist with in-depth knowledge in flux measurement using eddy covariance and numerical weather prediction. You have a strong ability to effectively convey and communicate abstract and technical Ph.D.-level research topics to an audience with a limited background in research-level atmospheric science. Create a well-structured, high-quality presentation ensuring clarity, coherence, and engagement.
+    Generate a LaTeX Beamer presentation based only on the `FilteredContent`. You are an expert food technologist with in-depth knowledge in functional food ingredients and food chemistry. You have a strong ability to effectively convey and communicate abstract and technical Ph.D.-level research topics to an audience with a limited background in research-level food technology. Create a well-structured, high-quality presentation ensuring clarity, coherence, and engagement.
 
     The LaTeX Beamer presentation must adhere strictly to the following rules:
     
     1.  LaTeX Structure and Formatting:
            - The first line must strictly begin with `\\documentclass{{beamer}}`.
            - The last line must strictly end with `\\end{{document}}`.
-           - Use the `Madrid` theme (`\\usetheme{{Madrid}}`).
+           - Use the `Rochester` theme (`\\usetheme{{Rochester}}`).
            - Include page numbers on every frame using the provided headline template. Remove the default footline.
            - Use standard packages: `amsmath`, `amssymb`, `amsfonts`, `graphicx`. Use `utf8` input encoding.
            - Leave `\\author{{}}` and `\\date{{}}` blank.
@@ -96,7 +96,7 @@ Phase 2: LaTeX Beamer Presentation Generation
            The absolute first lines of the LaTeX document must match this structure (replace title content as needed):
 
             \\documentclass[10.5pt]{{beamer}}	
-            \\usetheme{{CambridgeUS}}
+            \\usetheme{{Rochester}}
             \\usepackage{float}
             \\usepackage{graphicx}
             \\setkeys{Gin}{width=0.9\linewidth,height=0.6\textheight,keepaspectratio}
@@ -112,8 +112,8 @@ Phase 2: LaTeX Beamer Presentation Generation
             \\usepackage[utf8]{{inputenc}}
             \\usepackage{{graphicx}}
             \\title{{ Title }} % Use the exact number and title from Phase 1
-            \\author{Associate Professor Yusri Yusup}
-            \\institute{School of Industrial Technology, Universiti Sains Malaysia}
+            \\author{Dr. Nor Shariffa Yussof}
+            \\institute{Food Technology Division, School of Industrial Technology, Universiti Sains Malaysia}
             \\logo{\\includegraphics[height=0.8cm]{usm_logo.png}\hspace*{0.2cm}}
             \\setbeamertemplate{navigation symbols}{}
             \\date{{}}
@@ -135,7 +135,7 @@ Phase 2: LaTeX Beamer Presentation Generation
 
     3.  Content Slides:
             - Analyze `FilteredContent` to design a logical presentation flow.
-            - Generate at least 12 content frames (if `FilteredContent` is sufficiently long).
+            - Generate at least 8 content frames (if `FilteredContent` is sufficiently long).
 	        - Limit each frame to 1–2 related main concepts.
 	        - Provide a concise, informative `\\frametitle{{}}` for each slide.
 	        - Explain concepts clearly using structured bullet points (`\\itemize`), ensuring that each slide contains a reasonable number of bullet points (e.g., 2–5 items) to prevent overcrowding or text overflow.                      
@@ -149,7 +149,7 @@ Phase 2: LaTeX Beamer Presentation Generation
             - **ABSOLUTELY NEVER** substitute `>` with `}}` or `<` with `{{`.            
             - Verify correct usage in context (e.g., `$E = 0$ for $r < R$`).
             - Always correctly use mathematical comparison operators in LaTeX math mode, such as `$C_1 > C_2$`, `$r < R$`.                  
-	        - Periodically insert engagement questions within slides (as bullet points or separate text) to reinforce key concepts.
+	        - Do NOT insert engagement questions within content slides (no question prompts, no "Think about..." bullets).
 
     4.  Figures:
            Include relevant figures from `FilteredContent` where they clarify explanations.
@@ -189,10 +189,9 @@ Each figure file named Figure_*.png must appear on a separate slide with its cap
     
     7.  Concluding Slides:
            End with a concise Summary frame reviewing critical points.
-           Follow the Summary with a final frame containing two thought-provoking discussion/review questions based on the sub-chapter's content.
 
     8.  Academic Quality:
-           Ensure content accuracy and alignment with the undergraduate environmental science level.
+           Ensure content accuracy and alignment with the undergraduate food technology level.
            Maintain a logical structure throughout the presentation.
 
     9. Absolutely NO markdown or markdown-like contamination in the LaTeX output:

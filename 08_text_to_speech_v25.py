@@ -85,7 +85,9 @@ if __name__ == "__main__":
 
     # Your ElevenLabs voice_id (replace with your actual ID string)
     #VOICE_ID = "oVJIKtwMNyVoaGgYBKDc" #Yusri - Snowball Mic 2
-    VOICE_ID = "9x6m5PBXrn5YLEWGif5F" #Yusri - Rode NT1
+    #VOICE_ID = "9x6m5PBXrn5YLEWGif5F" #Yusri - Rode NT1
+    #VOICE_ID = "15Y62ZlO8it2f5wduybx" #Shazrina 
+    VOICE_ID = "Xb7hH8MSUJpSbSDYk0k2" #Alice - Clear, Engaging Educator"
 
     # Clean old WAVs
     for file in glob.glob("slide*.wav"):

@@ -43,13 +43,13 @@ api_key_gemini = os.getenv("GEMINI_API_KEY")
 if api_key_gemini:
     model_choice = 'gemini'
     api_key = api_key_gemini
-    model_name = "gemini-2.5-pro-preview-03-25"
+    model_name = "gemini-2.5-pro"
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(model_name)
     chat_session = model.start_chat()
 elif api_key_oai:
     model_choice = 'openai'
-    model_name = "gpt-5"
+    model_name = "gpt-5-mini"
     api_key = api_key_oai
     client = OpenAI(api_key=api_key)
 elif api_key_dsk:
@@ -61,7 +61,7 @@ else:
     raise EnvironmentError("❌ No valid API key found in .env.")
 
 model_choice = 'openai'
-model_name = 'gpt-5'
+model_name = 'gpt-5-mini'
 api_key = api_key_oai
 client = OpenAI(api_key=api_key_oai)
 
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     pdf_path = "source.pdf"
     
     start_page = 1     # Number of slides can be changed depending on the content.
-    end_page = 20      # The length of the video would change based on the slides number. The prompt below, the number of slides, e.g., 20, would also needed to be changed.
+    end_page = 10      # The length of the video would change based on the slides number. The prompt below, the number of slides, e.g., 20, would also needed to be changed.
     
     output_filename = f"{start_page}_{end_page}.md"
     
