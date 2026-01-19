@@ -266,7 +266,7 @@ Your task:
 3. Output for each figure:
     - The original filename (e.g., fig_1.png)
     - The inferred caption label (e.g., "Figure 21-5", "Fig. TP21.789", "Fig. TP41-4", "Figure 3-8a", "Figure 3-8b")
-    - A standardized relabel filename: "Figure_X.png", where X is the caption label cleaned (spaces → underscores, punctuation removed) and includes any sub-label (a/b/c) if visible.
+    - A standardized relabel filename: Figure_N.png, where N is the sequential figure number on the page (1, 2, 3, ...). Do NOT use caption text in filenames. (spaces → underscores, punctuation removed) and includes any sub-label (a/b/c) if visible.
 
 4. Only use the following figure filenames in your response — these are the actual figure images submitted in this batch:
     {batch_filenames}

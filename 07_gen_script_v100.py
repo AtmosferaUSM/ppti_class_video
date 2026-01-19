@@ -199,7 +199,7 @@ with open(scriptfile, "w") as outfile:
                 "**Slide 1 [1 sec]:\n"
                 "<break time=\"3s\" /> "
                 f"{title} "
-                "<break time=\"2s\" />**\n\n"
+                "<break time=\"1s\" />**\n\n"
             )
             print("Written normalized narrated opening for Slide 1")
             continue  # Skip narration generation for the first slide

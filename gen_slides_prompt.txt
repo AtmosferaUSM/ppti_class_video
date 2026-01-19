@@ -81,7 +81,7 @@ Phase 2: LaTeX Beamer Presentation Generation
     1.  LaTeX Structure and Formatting:
            - The first line must strictly begin with `\\documentclass{{beamer}}`.
            - The last line must strictly end with `\\end{{document}}`.
-           - Use the `Rochester` theme (`\\usetheme{{Rochester}}`).
+           - Use the `Boadilla` theme (`\\usetheme{{Boadilla}}`).
            - Include page numbers on every frame using the provided headline template. Remove the default footline.
            - Use standard packages: `amsmath`, `amssymb`, `amsfonts`, `graphicx`. Use `utf8` input encoding.
            - Leave `\\author{{}}` and `\\date{{}}` blank.
@@ -96,7 +96,7 @@ Phase 2: LaTeX Beamer Presentation Generation
            The absolute first lines of the LaTeX document must match this structure (replace title content as needed):
 
             \\documentclass[10.5pt]{{beamer}}	
-            \\usetheme{{Rochester}}
+            \\usetheme{{Boadilla}}
             \\usepackage{float}
             \\usepackage{graphicx}
             \\setkeys{Gin}{width=0.9\linewidth,height=0.6\textheight,keepaspectratio}
@@ -132,7 +132,7 @@ Phase 2: LaTeX Beamer Presentation Generation
             \\end{{frame}}
                        
            Manually create a concise, logical list of key topics from `FilteredContent` for the Outline slide `itemize` environment. Do not use `\\tableofcontents`.
-
+ 
     3.  Content Slides:
             - Analyze `FilteredContent` to design a logical presentation flow.
             - Generate at least 8 content frames (if `FilteredContent` is sufficiently long).

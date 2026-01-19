@@ -53,9 +53,9 @@ def elevenlabs_tts(text: str, out_path: str, voice_id: str):
         #model_id="eleven_multilingual_v2",
         output_format="pcm_16000",  # raw PCM16 @16kHz
         voice_settings=VoiceSettings(
-            speed=1.00,
-            stability=0.50,
-            similarity_boost=0.75,
+            speed=0.98,
+            stability=0.88,
+            similarity_boost=0.60,
             #style=0.25,
             #use_speaker_boost=True,
         ),
