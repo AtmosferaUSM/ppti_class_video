@@ -23,10 +23,18 @@ if hasattr(sys.stdout, "reconfigure"):
 # ---------- Slide parsing ----------
 def read_slides_from_file(file_path: str):
     """Return list of slide blocks starting with '**Slide'."""
-    with open(file_path, "r", encoding="cp1252") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         text = f.read()
     slides = re.split(r'(?=\*\*Slide)', text)
     return [s.strip() for s in slides if s.strip()]
+
+def extract_slide_number(slide_block: str) -> int:
+    """Extract numeric slide number from header like '**Slide 3 [12 sec]:'."""
+    first_line = slide_block.splitlines()[0].strip()
+    m = re.match(r"\*\*Slide\s+(\d+)", first_line)
+    if not m:
+        raise ValueError(f"Could not extract slide number from header: {first_line}")
+    return int(m.group(1))
 
 def remove_header(slide_block: str) -> str:
     """Strip the first '**Slide' header line + trailing asterisks."""
@@ -41,38 +49,30 @@ def elevenlabs_tts(text: str, out_path: str, voice_id: str):
     """
     Convert text → speech via ElevenLabs and save as proper WAV file.
     """
-    # Normalize text
     text = text.replace("`", "'").replace("’", "'").replace("‘", "'")
     clean_text = contractions.fix(text)
 
-    # Request raw PCM from ElevenLabs
     resp = elevenlabs.text_to_speech.convert(
         voice_id=voice_id,
         text=clean_text,
         model_id="eleven_turbo_v2",
-        #model_id="eleven_multilingual_v2",
-        output_format="pcm_16000",  # raw PCM16 @16kHz
+        output_format="pcm_16000",
         voice_settings=VoiceSettings(
             speed=0.98,
             stability=0.88,
             similarity_boost=0.60,
-            #style=0.25,
-            #use_speaker_boost=True,
         ),
     )
 
-    # Collect PCM bytes
     pcm_bytes = b"".join([chunk for chunk in resp if chunk])
 
-    # Write as a valid WAV
     with wave.open(out_path, "wb") as wf:
-        wf.setnchannels(1)       # mono
-        wf.setsampwidth(2)       # 16-bit
-        wf.setframerate(16000)   # 16kHz
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(16000)
         wf.writeframes(pcm_bytes)
 
     print(f'Audio written → "{out_path}"')
-
 
 # ---------- Main ----------
 if __name__ == "__main__":
@@ -85,26 +85,23 @@ if __name__ == "__main__":
 
     # Your ElevenLabs voice_id (replace with your actual ID string)
     #VOICE_ID = "oVJIKtwMNyVoaGgYBKDc" #Yusri - Snowball Mic 2
-    #VOICE_ID = "9x6m5PBXrn5YLEWGif5F" #Yusri - Rode NT1
+    VOICE_ID = "9x6m5PBXrn5YLEWGif5F" #Yusri - Rode NT1
     #VOICE_ID = "15Y62ZlO8it2f5wduybx" #Shazrina 
-    VOICE_ID = "Xb7hH8MSUJpSbSDYk0k2" #Alice - Clear, Engaging Educator"
+    #VOICE_ID = "Xb7hH8MSUJpSbSDYk0k2" #Alice - Clear, Engaging Educator"
 
     # Clean old WAVs
     for file in glob.glob("slide*.wav"):
         os.remove(file)
 
     # Generate
-    for idx, slide in enumerate(slides, start=1):
+    for slide in slides:
         try:
+            slide_num = extract_slide_number(slide)
             narration = remove_header(slide)
-            out_file = f"slide{idx}.wav"
+            out_file = f"slide{slide_num}.wav"
             elevenlabs_tts(narration, out_file, VOICE_ID)
         except Exception as e:
-            print(f"Error processing slide {idx}: {e}")
+            print(f"Error processing slide block: {e}")
 
     produced_files = glob.glob("slide*.wav")
-    if len(produced_files) == num_slides:
-        print(f"✅ Success: Produced {len(produced_files)} WAV files.")
-    else:
-        print(f"⚠️ Expected {num_slides} WAV files, but found {len(produced_files)}.")
-
+    print(f"Produced {len(produced_files)} WAV files.")

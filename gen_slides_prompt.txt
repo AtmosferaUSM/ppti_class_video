@@ -74,15 +74,19 @@ Phase 2: LaTeX Beamer Presentation Generation
     If any character from the source text is not ASCII-safe, rewrite it into its plain-text or LaTeX-safe equivalent.
 
     Instructions:
-    Generate a LaTeX Beamer presentation based only on the `FilteredContent`. You are an expert food technologist with in-depth knowledge in functional food ingredients and food chemistry. You have a strong ability to effectively convey and communicate abstract and technical Ph.D.-level research topics to an audience with a limited background in research-level food technology. Create a well-structured, high-quality presentation ensuring clarity, coherence, and engagement.
+    Generate a LaTeX Beamer presentation based only on the `FilteredContent`. You are an expert atmospheric scientist with in-depth knowledge in numerical weather prediction. You have a strong ability to effectively convey and communicate abstract and technical Ph.D.-level research topics to an audience with a limited background in research-level atmospheric science. Create a well-structured, high-quality presentation ensuring clarity, coherence, and engagement.
 
     The LaTeX Beamer presentation must adhere strictly to the following rules:
     
     1.  LaTeX Structure and Formatting:
            - The first line must strictly begin with `\\documentclass{{beamer}}`.
            - The last line must strictly end with `\\end{{document}}`.
-           - Use the `Boadilla` theme (`\\usetheme{{Boadilla}}`).
-           - Include page numbers on every frame using the provided headline template. Remove the default footline.
+           - Use the `CambridgeUS` theme (`\\usetheme{{CambridgeUS}}`).
+           - Do NOT display slide numbers anywhere.
+                - Do NOT use \insertframenumber
+                - Do NOT use \inserttotalframenumber
+                - Do NOT define a headline template that shows frame numbers
+                - Remove both headline and footline numbering entirely
            - Use standard packages: `amsmath`, `amssymb`, `amsfonts`, `graphicx`. Use `utf8` input encoding.
            - Leave `\\author{{}}` and `\\date{{}}` blank.
            - Ensure direct compilability with `pdflatex`. No markdown, code blocks, or explanatory text outside LaTeX commands.
@@ -96,15 +100,12 @@ Phase 2: LaTeX Beamer Presentation Generation
            The absolute first lines of the LaTeX document must match this structure (replace title content as needed):
 
             \\documentclass[10.5pt]{{beamer}}	
-            \\usetheme{{Boadilla}}
+            \\usetheme{{CambridgeUS}}
             \\usepackage{float}
             \\usepackage{graphicx}
             \\setkeys{Gin}{width=0.9\linewidth,height=0.6\textheight,keepaspectratio}
-            \\setbeamertemplate{{headline}}{{%
-            \\hfill%
-            \\insertframenumber{{}} / \\inserttotalframenumber%
-            \\par%
-            }}
+            \\setbeamertemplate{headline}{}
+            \\setbeamertemplate{footline}{}
             \\setbeamertemplate{{footline}}{{}} % Remove the default footline
             \\usepackage{{amsmath}}
             \\usepackage{{amssymb}}
@@ -112,8 +113,8 @@ Phase 2: LaTeX Beamer Presentation Generation
             \\usepackage[utf8]{{inputenc}}
             \\usepackage{{graphicx}}
             \\title{{ Title }} % Use the exact number and title from Phase 1
-            \\author{Dr. Nor Shariffa Yussof}
-            \\institute{Food Technology Division, School of Industrial Technology, Universiti Sains Malaysia}
+            \\author{Associate Professor Dr. Yusri Yusup}
+            \\institute{Environmental Technology, School of Industrial Technology, Universiti Sains Malaysia}
             \\logo{\\includegraphics[height=0.8cm]{usm_logo.png}\hspace*{0.2cm}}
             \\setbeamertemplate{navigation symbols}{}
             \\date{{}}
@@ -191,7 +192,7 @@ Each figure file named Figure_*.png must appear on a separate slide with its cap
            End with a concise Summary frame reviewing critical points.
 
     8.  Academic Quality:
-           Ensure content accuracy and alignment with the undergraduate food technology level.
+           Ensure content accuracy and alignment with the postgraduate environmental technology level.
            Maintain a logical structure throughout the presentation.
 
     9. Absolutely NO markdown or markdown-like contamination in the LaTeX output:

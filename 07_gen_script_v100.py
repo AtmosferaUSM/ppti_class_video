@@ -75,6 +75,7 @@ elif api_key_dsk:
 textbookfile="source.pdf"
 scriptfile="script.txt"
 
+
 # Extract text from PDF
 def extract_text_from_pdf(pdf_file_path):
     text = ""
@@ -85,6 +86,21 @@ def extract_text_from_pdf(pdf_file_path):
             if page_text:
                 text += page_text + "\n"
     return text
+
+def should_skip_narration(slide):
+    title = slide.get("title", "").strip().lower()
+    text_content = slide.get("text_content", "").strip().lower()
+
+    skip_markers = [
+        "ai-assisted lecture production",
+        "artificial intelligence tools",
+        "generation of presentation slides and narration scripts",
+        "reviewed and approved by the instructor",
+    ]
+
+    combined_text = f"{title}\n{text_content}"
+
+    return any(marker in combined_text for marker in skip_markers)
 
 # Extract slide content from PDF
 def extract_slide_contents(presentation_file_path):
@@ -98,7 +114,10 @@ def extract_slide_contents(presentation_file_path):
                 title = lines[0].strip() if lines else ""
                 content = "\n".join(lines[1:]).strip() if len(lines) > 1 else ""
                 slide_contents.append({"slide_number": i + 1, "title": title, "text_content": content})
+            else:
+                slide_contents.append({"slide_number": i + 1, "title": "", "text_content": ""})
     return slide_contents
+
 
 # Estimate reading time
 def estimate_reading_time(narration_script):
@@ -183,6 +202,7 @@ if os.path.exists(scriptfile):
 
 with open(scriptfile, "w") as outfile:
     for i in range(len(slide_contents)):
+        slide = slide_contents[i]
         ##
         if i == 0:
             title = slide_contents[0]['text_content'].strip()
@@ -203,6 +223,10 @@ with open(scriptfile, "w") as outfile:
             )
             print("Written normalized narrated opening for Slide 1")
             continue  # Skip narration generation for the first slide
+        
+        if should_skip_narration(slide):
+            print(f"Skipping narration for Slide {i+1} ({slide.get('title', '').strip()})")
+            continue
         ##
         try:
             #narration = generate_lecture_narration(slide_contents, textbook_content, i, model_type=model_choice)

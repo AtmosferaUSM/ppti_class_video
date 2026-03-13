@@ -42,6 +42,31 @@ else:
     raise RuntimeError("No API key found for Gemini, OpenAI, or Deepseek")
 # end of Load environment and auto selection of llm based on whether the API key of the LLMs are inside .env. 
 
+def append_ai_disclaimer_slide(latex_text):
+    disclaimer_frame = r"""
+% AI_DISCLOSURE_SLIDE
+\begin{frame}{AI-Assisted Lecture Production}
+\small
+This lecture video was produced with the assistance of artificial intelligence tools.
+
+\vspace{0.5em}
+
+The academic content, source materials, and instructional design were prepared and curated by the instructor.
+
+\vspace{0.5em}
+
+Artificial intelligence was used only to assist in the generation of presentation slides and narration scripts. The final material was reviewed and approved by the instructor.
+
+\vfill
+\centering
+\footnotesize School of Industrial Technology\\
+Universiti Sains Malaysia
+\end{frame}
+"""
+    end_doc = r"\end{document}"
+    if end_doc in latex_text:
+        return latex_text.replace(end_doc, disclaimer_frame + "\n" + end_doc, 1)
+    return latex_text + "\n" + disclaimer_frame
 
 def gen_slide(llmmodel, model_name):
     print(f"[INFO] Configuring LLM client for model: {llmmodel}")
@@ -100,6 +125,9 @@ def gen_slide(llmmodel, model_name):
     if lines and lines[-1].startswith("```"):
         lines = lines[:-1]
     latex_presentation = "\n".join(lines)
+    
+    # Append AI disclosure slide before saving/compiling
+    latex_presentation = append_ai_disclaimer_slide(latex_presentation)
 
     out_base = {
         'openai':'slides_oai',
